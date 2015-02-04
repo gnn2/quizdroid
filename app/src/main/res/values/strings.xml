@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Quiz1</string>
+    <string name="hello_world">Take a quiz!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_overview">Overview</string>
+    <string name="definition">blahblahblahblahblahblahblahbla
+        hblahblahblahblahblahblahblahblahblahblahblahblahbla
+        hblahblahblahblahblahblah</string>
+    <string name="take">Begin</string>
+    <string name="title_activity_quiz_question">QuizQuestion</string>
+    <string name="sub">Submit</string>
+    <string name="next">Next Question</string>
+    <string name="title_activity_summary">Summary</string>
+    <string name="finish">Finish</string>
+
+</resources>
