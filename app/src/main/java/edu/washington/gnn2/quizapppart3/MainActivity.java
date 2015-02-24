@@ -1,6 +1,7 @@
 package edu.washington.gnn2.quizapppart3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -99,6 +100,10 @@ public class MainActivity extends ActionBarActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(MainActivity.this, PreferenceActivity.class);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                startActivity(i); // opens a new activity
+            }
             return true;
         }
 
@@ -202,8 +207,8 @@ public class MainActivity extends ActionBarActivity  {
     }
 
 
-    public void onClick(View v){
+   // public void onClick(View v){
 
-    }
+  //  }
 
 }
