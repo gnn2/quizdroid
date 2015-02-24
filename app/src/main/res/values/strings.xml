@@ -17,6 +17,7 @@
     <string name="title_activity_quiz">QuizActivity</string>
     <string name="enterURL">Enter URL:</string>
     <string name="enterT">Enter time in minutes:</string>
+    <string name="ok">Okay</string>
     <string name="can">Cancel</string>
     <string name="title_activity_preference">PreferenceActivity</string>
 

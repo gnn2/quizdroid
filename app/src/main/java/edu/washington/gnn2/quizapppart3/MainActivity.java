@@ -206,9 +206,8 @@ public class MainActivity extends ActionBarActivity  {
         return possible;
     }
 
-
-   // public void onClick(View v){
-
-  //  }
+    public void onDestroy(){
+        super.onDestroy();
+    }
 
 }

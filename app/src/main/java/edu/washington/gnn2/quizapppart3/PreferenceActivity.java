@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import
         android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,13 +21,24 @@ import java.util.prefs.PreferenceChangeEvent;
 
 public class PreferenceActivity extends ActionBarActivity {
  private static Intent intent;
+    private static PendingIntent pi;
     private int PERIOD;
+    private String TAG = ".PreferenceActivity";
+    private static String d = "1";
+    private static String m = "http://tednewardsandbox.site44.com/questions.json";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preference);
         Button b = (Button) findViewById(R.id.submit);
         Button c = (Button) findViewById(R.id.cancel);
+
+        if(m != null && d!= null){
+            EditText dur = (EditText) findViewById(R.id.theTime);
+            dur.setText(d);
+            EditText url = (EditText) findViewById(R.id.theURL);
+            url.setText(m);
+        }
 
         c.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -49,12 +61,20 @@ public class PreferenceActivity extends ActionBarActivity {
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EditText dur = (EditText) findViewById(R.id.theTime);
-                String d = dur.getText().toString();
+                d = dur.getText().toString();
                 EditText url = (EditText) findViewById(R.id.theURL);
-                String m = url.getText().toString();
+                 m = url.getText().toString();
                 int duration = Integer.parseInt(d);
                 if( duration > 0 && m != null && !m.isEmpty()){
-                    System.out.println("Should make taost alarms");
+
+                    if(pi != null){ //cancel previous pending intent when url or time is updated
+                        PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                        alarmManager.cancel(contentIntent);
+                        contentIntent.cancel();
+                    }
+
+                    System.out.println("Should make toast alarms");
                     Button b = (Button) findViewById(R.id.submit);
                     b.setTag("on");
                     PERIOD = duration;
@@ -63,7 +83,7 @@ public class PreferenceActivity extends ActionBarActivity {
                     intent = new Intent(getApplicationContext(), AlarmReceiver.class);
                     intent.putExtra("message", m);
 
-                    PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+                     pi = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
                     PERIOD = PERIOD * 60000;
                     mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30000, PERIOD, pi);
                     Button c = (Button) findViewById(R.id.cancel);
@@ -104,5 +124,14 @@ public class PreferenceActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        Log.i(TAG,"Activity is destroyed, toasts should be canceled?");
+       // PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+       // AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+       // alarmManager.cancel(contentIntent);
+       // contentIntent.cancel();
     }
 }
