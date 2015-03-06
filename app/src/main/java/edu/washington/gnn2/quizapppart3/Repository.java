@@ -1,8 +1,11 @@
 package edu.washington.gnn2.quizapppart3;
 
 import android.content.ServiceConnection;
+import android.os.Environment;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -11,29 +14,15 @@ import java.util.Set;
  * Created by Gabby on 2/16/2015.
  */
 public class Repository implements RepositoryInterface {
-    /**
-    private static HashMap<String, ArrayList<String>> questions; //
-    private static HashMap<String, ArrayList<String>> answers;
-    private static HashMap<String, HashMap<Integer, ArrayList<String>>> possibleAnswers;
-    private static ArrayList<String> quizes;
-    private static ArrayList<String> topicQ;
-     */
 
     private static HashMap<String,Topic> repo;
-
+  //  private FileInputStream file;
+    private final String TAG = ".Repository";
     public Repository(){
-     /**   quizes = addTopics();
-        topicQ = addQuestions();
-        questions = initQuestions(quizes);
-        answers = initAnswers(quizes);
-        possibleAnswers = setPossibleAnswers();
-      */
+
         repo = new HashMap<String, Topic>();
 
-
     }
-
-
 
     public HashMap<String, Topic> getRepo() {
         return this.repo;
@@ -57,7 +46,7 @@ public class Repository implements RepositoryInterface {
             i++;
         }
         return repo;
-    }
+}
 
     private static ArrayList<Question> setQuestions(int index, String topic, HashMap<String, ArrayList<String>> questions,HashMap<String, ArrayList<String>> answers,HashMap<String, HashMap<Integer, ArrayList<String>>> possibleAnswers ){
         ArrayList<Question> q = new ArrayList<Question>();
@@ -87,4 +76,25 @@ public class Repository implements RepositoryInterface {
     public Set<String> getRepoKeySet(){
         return repo.keySet();
     }
+
+    public HashMap<String,Topic> addTopicQuestion(String topic, String desc, String question, String answer, ArrayList<String> answers){
+        Topic t;
+        if(!repo.containsKey(topic)) {
+            t = new Topic(topic, null, desc);
+        } else {
+           t = getTopic(topic);
+        }
+        Question qu = new Question(question);
+        ArrayList<String> possible = answers;
+        int a = Integer.parseInt(answer) - 1;
+        qu.setPossibleAnswers(possible);
+        qu.setCorrectAnswer(a);
+        t.setQuizQuestion(qu);
+        ArrayList<Question> q = t.getQuizQuestions();
+        t.setQuizQuestions(q);
+        repo.put(topic, t);
+        return repo;
+    }
+
+
 }

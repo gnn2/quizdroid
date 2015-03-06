@@ -14,5 +14,5 @@ public interface RepositoryInterface {
     public HashMap<String, Topic> getRepo();
     public Topic getTopic(String topic);
     public Set<String> getRepoKeySet();
-
+    public HashMap<String,Topic> addTopicQuestion(String topic, String desc, String question, String answer, ArrayList<String> answers);
 }

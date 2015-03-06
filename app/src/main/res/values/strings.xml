@@ -3,7 +3,7 @@
 
     <string name="app_name">QuizAppPart3</string>
     <string name="action_settings">Preferences</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Quiz App 5</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_world">Take a quiz!</string>
     <string name="title_activity_overview">Overview</string>
@@ -20,5 +20,6 @@
     <string name="ok">Okay</string>
     <string name="can">Cancel</string>
     <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="title_activity_download">Download</string>
 
 </resources>

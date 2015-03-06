@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -20,6 +22,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -28,30 +40,70 @@ public class MainActivity extends ActionBarActivity  {
 
     private static final String TAG = "MainActivity";
     public static Repository repo;
+    private static final String name = "quizdata.json";
+    private static String m = "http://tednewardsandbox.site44.com/questions.json";
+    private File data ;
    // private static ArrayList<String> topics;
     private static HashMap<String, ArrayList<String>> questions; //
     private static HashMap<String, ArrayList<String>> answers;
     private static HashMap<String, HashMap<Integer, ArrayList<String>>> possibleAnswers;
     private static ArrayList<String> quizes;
     private static ArrayList<String> topicQ;
-
+    HashMap<String, Topic> dir;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "Activity onCreate");
         setContentView(R.layout.activity_main);
+        data = new File(getApplicationContext().getFilesDir().getAbsolutePath(), "quizdata.json");
+        QuizApp app = new QuizApp();
+        quizes  = new ArrayList<String>();
+        dir = new HashMap<String, Topic>();
+        final Repository repo = new Repository();
 
-       QuizApp app = new QuizApp();
-        quizes = addTopics();
-        topicQ = addQuestions();
-        questions = initQuestions(quizes);
-        answers = initAnswers(quizes);
-        possibleAnswers = setPossibleAnswers();
+        if(data.exists()){
+            try{
+                FileInputStream fis = new FileInputStream(data);
+                String f = readJSONFile(fis);
+                JSONArray jsonArray = new JSONArray(f);
+              //  JSONArray names = jsonObject.names();
+                int topics = jsonArray.length();
+                for(int i = 0; i < topics; i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    //JSONArray names = jsonObject.names();
+                    String title = jsonObject.getString("title");
+                    String desc =jsonObject.getString("desc");
+                    JSONArray questions = jsonObject.getJSONArray("questions");
+                    int qs = questions.length();
+                    for(int j = 0; j < qs; j ++){
+                         JSONObject question = questions.getJSONObject(j);
+                        JSONArray names = question.names();
+                        String q = question.getString("text");
+                        String answer = question.getString("answer");
+                        JSONArray answers = question.getJSONArray("answers");
+                        ArrayList<String> listdata = new ArrayList<String>();
+                        if (answers != null) {
+                            for (int z=0;z<answers.length();z++){
+                                listdata.add(answers.get(z).toString());
+                            }
+                        }
+                        dir = repo.addTopicQuestion(title,desc,q,answer,listdata);
+                    }
+                    quizes.add(title);
+                }
+               // System.out.println(names.toString());
+                } catch(Exception e){
+                    System.out.println(e.toString());
+                }
+        } else {
+            quizes = addTopics();
+            topicQ = addQuestions();
+            questions = initQuestions(quizes);
+            answers = initAnswers(quizes);
+            possibleAnswers = setPossibleAnswers();
 
-      final Repository repo = new Repository();
-
-       HashMap<String, Topic> dir = repo.createRepo(quizes, questions, answers, possibleAnswers);
-
+           dir  = repo.createRepo(quizes, questions, answers, possibleAnswers);
+        }
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quizes);
         ListView listView = (ListView) findViewById(R.id.listItem);
@@ -65,9 +117,6 @@ public class MainActivity extends ActionBarActivity  {
                         ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
                 String name = ((TextView) view).getText().toString();
                 Intent i = new Intent(MainActivity.this, QuizActivity.class);
-               // QuizApp quiz = QuizApp.getInstance();
-                //Intent nextActivity = new Intent(MainActivity.this, QuizActivity.class); // cannot use just this cuz this refers to the listener, not the outer this
-
                 // add data to be passed to next activity
                 i.putExtra("Overview_name", name);
                 Topic t = repo.getTopic(name);
@@ -76,8 +125,6 @@ public class MainActivity extends ActionBarActivity  {
                if (i.resolveActivity(getPackageManager()) != null) {
                    startActivity(i); // opens a new activity
                 }
-
-
                 // finish(); // kill this instance self (this activity)
             }
         });
@@ -210,4 +257,27 @@ public class MainActivity extends ActionBarActivity  {
         super.onDestroy();
     }
 
+
+    private String readJSONFile (FileInputStream in) {
+        String json = null;
+        try {
+
+            int size = in.available();
+
+            byte[] buffer = new byte[size];
+
+            in.read(buffer);
+
+            in.close();
+
+            json = new String(buffer, "UTF-8");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+
+    }
 }

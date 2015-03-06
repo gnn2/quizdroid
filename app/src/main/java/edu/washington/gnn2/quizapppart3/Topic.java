@@ -18,7 +18,13 @@ public class Topic implements Serializable {
         this.title = title;
         this.descriptionShort = descriptionShort;
         this.descriptionLong = descriptionLong;
+        quizQuestions = new ArrayList<Question>();
     }
+
+    public void setQuizQuestion(Question q) {
+        quizQuestions.add(q);
+    }
+
 
     public ArrayList<Question> getQuizQuestions() {
         return quizQuestions;
